@@ -1,43 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 
-interface AppProps {}
-interface AppState {
-  eventLog: string[];
-}
+function App() {
+  const [eventLog, setEventLog] = useState<string[]>([]);
 
-class App extends React.Component<{}, AppState> {
-  constructor(props: AppProps) {
-    super(props);
-    this.state = {
-      eventLog: [],
-    };
-  }
-
-  taxPredictionEvent =
+  const taxPredictionEvent =
     "Tax prediction system records an expected tax liability for TWC";
 
-  recordEvent = (event: string) => (e: React.MouseEvent) => {
+  const recordEvent = (event: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    this.setState((prevState) => ({
-      eventLog: [...prevState.eventLog, event],
-    }));
+    setEventLog([...eventLog, event]);
   };
 
-  render() {
-    const eventLogEntries = this.state.eventLog.map((entry) => {
-      return <li>{entry}</li>;
-    });
+  const eventLogEntries = eventLog.map((event) => <li>{event}</li>);
 
-    return (
-      <div className="App">
-        <button onClick={this.recordEvent(this.taxPredictionEvent)}>
-          {this.taxPredictionEvent}
-        </button>
-        <ul>{eventLogEntries}</ul>
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      <button onClick={recordEvent(taxPredictionEvent)}>
+        {taxPredictionEvent}
+      </button>
+      <ul>{eventLogEntries}</ul>
+    </div>
+  );
 }
 
 export default App;
