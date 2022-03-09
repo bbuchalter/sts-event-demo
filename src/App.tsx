@@ -3,7 +3,11 @@ import "./App.css";
 
 function App() {
   // Events
-  const [eventLog, setEventLog] = useState<string[]>([]);
+  interface Event {
+    name: string;
+    date: number;
+  }
+  const [eventLog, setEventLog] = useState<Event[]>([]);
 
   const supportedEvents = [
     "Tax prediction system records an expected tax liability for TWC",
@@ -12,7 +16,7 @@ function App() {
 
   const recordEvent = (event: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    setEventLog([...eventLog, event]);
+    setEventLog([...eventLog, { name: event, date: Date.now() }]);
   };
 
   const eventButtons = supportedEvents.map((event) => (
@@ -44,11 +48,22 @@ function App() {
         <p>{button}</p>
       ))}
       <h2>Event History</h2>
-      <ul>
-        {eventLog.map((entry) => (
-          <li>{entry}</li>
-        ))}
-      </ul>
+      <table>
+        {eventLog.length > 0 && (
+          <thead>
+            <th>Seconds Since Unix Epoc</th>
+            <th>Event</th>
+          </thead>
+        )}
+        <tbody>
+          {eventLog.map((entry) => (
+            <tr>
+              <td>{entry.date}</td>
+              <td>{entry.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <h2>Data</h2>
       {dataInputs.map((input) => (
         <p>{input}</p>
