@@ -1,5 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
+
+enum EinStates {
+  BlankOK = "Blank OK",
+  BlankNotOK = "Blank Not OK",
+  PresentOK = "Present OK",
+  PresentNotOK = "Present Not OK",
+}
+
+function calculateEinState(ein: any, qtdWagesPaid: number) {
+  if (ein.length === 0) {
+    if (qtdWagesPaid <= 1500) {
+      return EinStates.BlankOK;
+    } else {
+      return EinStates.BlankNotOK;
+    }
+  } else {
+    return EinStates.PresentOK;
+  }
+}
 
 function App() {
   // Events
@@ -24,24 +43,23 @@ function App() {
   const [ein, setEin] = useState<string>("");
 
   // Computed state
-  enum EinStates {
-    BlankOK = "Blank OK",
-    BlankNotOK = "Blank Not OK",
-    PresentOK = "Present OK",
-    PresentNotOK = "Present Not OK",
-  }
-  const calculateEinState = () => {
-    if (ein.length === 0) {
-      if (qtdWagesPaid <= 1500) {
-        return EinStates.BlankOK;
-      } else {
-        return EinStates.BlankNotOK;
-      }
-    } else {
-      return EinStates.PresentOK;
-    }
+  const [einState, setEinState] = useState<EinStates>(() =>
+    calculateEinState(ein, qtdWagesPaid)
+  );
+
+  const lastEventWasWagesPaid = () => {
+    return (
+      eventLog[eventLog.length - 1]?.name ===
+      "Wages are paid to an employee with TX work address"
+    );
   };
-  const einState: EinStates = calculateEinState();
+
+  useEffect(() => {
+    setEinState(calculateEinState(ein, qtdWagesPaid));
+    // For this demo to better reflect the way ZP works,
+    // we are only recalculating the EIN state when there is an event log change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastEventWasWagesPaid()]);
 
   return (
     <div className="App">
