@@ -24,13 +24,24 @@ function App() {
   const [ein, setEin] = useState<string>("");
 
   // Computed state
-  enum validEinStates {
+  enum EinStates {
     BlankOK = "Blank OK",
     BlankNotOK = "Blank Not OK",
     PresentOK = "Present OK",
     PresentNotOK = "Present Not OK",
   }
-  const einState: validEinStates = validEinStates.BlankOK;
+  const calculateEinState = () => {
+    if (ein.length === 0) {
+      if (qtdWagesPaid <= 1500) {
+        return EinStates.BlankOK;
+      } else {
+        return EinStates.BlankNotOK;
+      }
+    } else {
+      return EinStates.PresentOK;
+    }
+  };
+  const einState: EinStates = calculateEinState();
 
   return (
     <div className="App">
