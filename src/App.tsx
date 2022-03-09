@@ -8,6 +8,11 @@ enum EinStates {
   PresentNotOK = "Present Not OK",
 }
 
+enum WageThresholdMet {
+  Yes = "Yes",
+  No = "No"
+}
+
 function calculateEinState(ein: any, qtdWagesPaid: number) {
   if (ein.length === 0) {
     if (qtdWagesPaid <= 1500) {
@@ -20,7 +25,12 @@ function calculateEinState(ein: any, qtdWagesPaid: number) {
   }
 }
 
+function calculateWageThresholdMetState(qtdWagesPaid: number) {
+  return qtdWagesPaid > 1500 ? WageThresholdMet.Yes : WageThresholdMet.No;
+}
+
 function App() {
+  console.log("Render start")
   // Events
   interface Event {
     name: string;
@@ -34,7 +44,7 @@ function App() {
   ];
 
   const recordEvent = (event: string) => {
-    setEventLog([...eventLog, { name: event, date: Date.now() }]);
+    setEventLog((previousEventLog) => [...previousEventLog, { name: event, date: Date.now() }]);
   };
 
   // Data
@@ -50,6 +60,14 @@ function App() {
     }
   };
 
+  const [wageThresholdMet, setWageThresholdMet] = useState<WageThresholdMet>();
+  const setWageThresholdMetAndRecordEvent = (newState: WageThresholdMet) => {
+    if (newState !== wageThresholdMet) {
+      setWageThresholdMet(newState);
+      recordEvent(`Wage threshold met state changed from ${wageThresholdMet} to ${newState}`);
+    }
+  }
+
   const lastEventWasWagesPaid = () => {
     return (
       eventLog[eventLog.length - 1]?.name ===
@@ -58,13 +76,24 @@ function App() {
   };
 
   useEffect(() => {
-    if (!einState || lastEventWasWagesPaid()) {
+    console.log("Use effect start")
+    if (!einState || eventLog[eventLog.length - 1]?.name.includes("Wage threshold met state changed")) {
+      console.log("Updating EIN state")
       setEinStateAndRecordEvent(calculateEinState(ein, qtdWagesPaid));
     }
+
+    if (!wageThresholdMet || eventLog[eventLog.length - 1]?.name == "Wages are paid to an employee with TX work address") {
+      console.log("Updating Wage Threshold state")
+      setWageThresholdMetAndRecordEvent(calculateWageThresholdMetState(qtdWagesPaid));
+    }
+
     // For this demo to better reflect the way ZP works,
     // we are only recalculating the EIN state when there is an event log change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventLog]);
+
+  console.log("EIN state", einState)
+  console.log("Wage state", wageThresholdMet)
 
   return (
     <div className="App">
@@ -86,7 +115,7 @@ function App() {
         )}
         <tbody>
           {eventLog.map((entry) => (
-            <tr key={entry.date + "logentry"}>
+            <tr key={entry.date + "logentry" + entry.name}>
               <td>{entry.date}</td>
               <td>{entry.name}</td>
             </tr>
@@ -126,6 +155,9 @@ function App() {
           <tr>
             <td>EIN</td>
             <td>{einState}</td>
+          </tr><tr>
+            <td>Wage Threshold Met</td>
+            <td>{wageThresholdMet}</td>
           </tr>
         </tbody>
       </table>
