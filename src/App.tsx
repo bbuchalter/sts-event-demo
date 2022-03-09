@@ -19,27 +19,9 @@ function App() {
     setEventLog([...eventLog, { name: event, date: Date.now() }]);
   };
 
-  const eventButtons = supportedEvents.map((event) => (
-    <button onClick={recordEvent(event)}>{event}</button>
-  ));
-
   // Data
   const [qtdWagesPaid, setQtdWagesPaid] = useState<number>(0);
   const [ein, setEin] = useState<string>("");
-  const dataInputs = [
-    <label>
-      QTD Wages Paid:
-      <input
-        type="text"
-        value={qtdWagesPaid}
-        onChange={(e) => setQtdWagesPaid(Number(e.target.value))}
-      />
-    </label>,
-    <label>
-      EIN:
-      <input type="text" value={ein} onChange={(e) => setEin(e.target.value)} />
-    </label>,
-  ];
 
   // Computed state
   enum validEinStates {
@@ -53,8 +35,10 @@ function App() {
   return (
     <div className="App">
       <h2>Events</h2>
-      {eventButtons.map((button) => (
-        <p>{button}</p>
+      {supportedEvents.map((event) => (
+        <p key={event + "button"}>
+          <button onClick={recordEvent(event)}>{event}</button>
+        </p>
       ))}
       <h2>Event History</h2>
       <table>
@@ -68,7 +52,7 @@ function App() {
         )}
         <tbody>
           {eventLog.map((entry) => (
-            <tr>
+            <tr key={entry.date + "logentry"}>
               <td>{entry.date}</td>
               <td>{entry.name}</td>
             </tr>
@@ -76,9 +60,26 @@ function App() {
         </tbody>
       </table>
       <h2>Data</h2>
-      {dataInputs.map((input) => (
-        <p>{input}</p>
-      ))}
+      <p>
+        <label>
+          QTD Wages Paid:
+          <input
+            type="text"
+            value={qtdWagesPaid}
+            onChange={(e) => setQtdWagesPaid(Number(e.target.value))}
+          />
+        </label>
+      </p>
+      <p>
+        <label>
+          EIN:
+          <input
+            type="text"
+            value={ein}
+            onChange={(e) => setEin(e.target.value)}
+          />
+        </label>
+      </p>
       <h2>System state</h2>
       <table>
         <thead>
