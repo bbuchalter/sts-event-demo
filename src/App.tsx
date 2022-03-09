@@ -60,8 +60,10 @@ function App() {
       <table>
         {eventLog.length > 0 && (
           <thead>
-            <th>Timestamp</th>
-            <th>Event</th>
+            <tr>
+              <th>Timestamp</th>
+              <th>Event</th>
+            </tr>
           </thead>
         )}
         <tbody>
@@ -80,8 +82,10 @@ function App() {
       <h2>System state</h2>
       <table>
         <thead>
-          <th>Attribute</th>
-          <th>State</th>
+          <tr>
+            <th>Attribute</th>
+            <th>State</th>
+          </tr>
         </thead>
         <tbody>
           <tr>
