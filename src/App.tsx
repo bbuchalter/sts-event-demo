@@ -33,8 +33,7 @@ function App() {
     "Wages are paid to an employee with TX work address",
   ];
 
-  const recordEvent = (event: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
+  const recordEvent = (event: string) => {
     setEventLog([...eventLog, { name: event, date: Date.now() }]);
   };
 
@@ -43,9 +42,13 @@ function App() {
   const [ein, setEin] = useState<string>("");
 
   // Computed state
-  const [einState, setEinState] = useState<EinStates>(() =>
-    calculateEinState(ein, qtdWagesPaid)
-  );
+  const [einState, setEinState] = useState<EinStates>();
+  const setEinStateAndRecordEvent = (newEinState: EinStates) => {
+    if (einState !== newEinState) {
+      setEinState(newEinState);
+      recordEvent(`EIN state changed from ${einState} to ${newEinState}`);
+    }
+  };
 
   const lastEventWasWagesPaid = () => {
     return (
@@ -55,18 +58,20 @@ function App() {
   };
 
   useEffect(() => {
-    setEinState(calculateEinState(ein, qtdWagesPaid));
+    if (!einState || lastEventWasWagesPaid()) {
+      setEinStateAndRecordEvent(calculateEinState(ein, qtdWagesPaid));
+    }
     // For this demo to better reflect the way ZP works,
     // we are only recalculating the EIN state when there is an event log change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastEventWasWagesPaid()]);
+  }, [eventLog]);
 
   return (
     <div className="App">
       <h2>Events</h2>
       {supportedEvents.map((event) => (
         <p key={event + "button"}>
-          <button onClick={recordEvent(event)}>{event}</button>
+          <button onClick={(e) => recordEvent(event)}>{event}</button>
         </p>
       ))}
       <h2>Event History</h2>
