@@ -41,6 +41,15 @@ function App() {
     </label>,
   ];
 
+  // Computed state
+  enum validEinStates {
+    BlankOK = "Blank OK",
+    BlankNotOK = "Blank Not OK",
+    PresentOK = "Present OK",
+    PresentNotOK = "Present Not OK",
+  }
+  const einState: validEinStates = validEinStates.BlankOK;
+
   return (
     <div className="App">
       <h2>Events</h2>
@@ -51,7 +60,7 @@ function App() {
       <table>
         {eventLog.length > 0 && (
           <thead>
-            <th>Seconds Since Unix Epoc</th>
+            <th>Timestamp</th>
             <th>Event</th>
           </thead>
         )}
@@ -68,6 +77,19 @@ function App() {
       {dataInputs.map((input) => (
         <p>{input}</p>
       ))}
+      <h2>System state</h2>
+      <table>
+        <thead>
+          <th>Attribute</th>
+          <th>State</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EIN</td>
+            <td>{einState}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
